@@ -1,8 +1,8 @@
 defmodule AdventFour do
   def get_breakpoints(row) do
     [range1_str, range2_str] = String.split(row, ",")
-    [start_str1, stop_str1] = String.split(range1_str, "-", parts: 2)
-    [start_str2, stop_str2] = String.split(range2_str, "-", parts: 2)
+    [start_str1, stop_str1] = String.split(range1_str, "-")
+    [start_str2, stop_str2] = String.split(range2_str, "-")
 
     {String.to_integer(start_str1), String.to_integer(stop_str1), String.to_integer(start_str2),
      String.to_integer(stop_str2)}
@@ -20,14 +20,14 @@ defmodule AdventFour do
 
   def get_pairs_containing(input) do
     input
-    |> String.split("\n", trim: true)
+    |> String.split("\n")
     |> Enum.filter(&contains?/1)
     |> length
   end
 
   def get_pairs_overlapping(input) do
     input
-    |> String.split("\n", trim: true)
+    |> String.split("\n")
     |> Enum.filter(&overlaps?/1)
     |> length
   end
