@@ -1,54 +1,40 @@
-defmodule Range do
-  def from_string(str) do
-    [start_str, stop_str] = String.split(str, "-", parts: 2)
-    {String.to_integer(start_str), String.to_integer(stop_str)}
-  end
-
-  def contains?(range1, range2) do
-    {start1, stop1} = range1
-    {start2, stop2} = range2
-    start1 <= start2 && stop1 >= stop2
-  end
-end
-
-defmodule SectionAssignment do
-  def contains(range1_str, range2_str) do
-    range1 = Range.from_string(range1_str)
-    range2 = Range.from_string(range2_str)
-
-    if Range.contains?(range1, range2) do
-      IO.puts("#{range1_str}, #{range2_str} contains")
-      true
-    else
-      if Range.contains?(range2, range1) do
-        IO.puts("#{range1_str}, #{range2_str} is contained by")
-        true
-      else
-        false
-      end
-    end
-  end
-end
-
 defmodule AdventFour do
-  def count_containment(pairs) do
-    Enum.reduce(pairs, 0, fn pair, count ->
-      [range1_str, range2_str] = String.split(pair, ",")
+  def get_breakpoints(row) do
+    [range1_str, range2_str] = String.split(row, ",")
+    [start_str1, stop_str1] = String.split(range1_str, "-", parts: 2)
+    [start_str2, stop_str2] = String.split(range2_str, "-", parts: 2)
 
-      if SectionAssignment.contains(range1_str, range2_str) do
-        count + 1
-      else
-        count
-      end
-    end)
+    {String.to_integer(start_str1), String.to_integer(stop_str1), String.to_integer(start_str2),
+     String.to_integer(stop_str2)}
   end
 
-  def get_containing_pairs(input) do
-    pairs = String.split(input, "\n", trim: true)
-    result = count_containment(pairs)
-    IO.puts("Number of assignment pairs that contain one another: #{result}")
+  def contains?(row) do
+    {start1, stop1, start2, stop2} = AdventFour.get_breakpoints(row)
+    (start1 <= start2 && stop1 >= stop2) || (start1 >= start2 && stop1 <= stop2)
+  end
+
+  def overlaps?(row) do
+    {start1, stop1, start2, stop2} = AdventFour.get_breakpoints(row)
+    start1 <= stop2 && start2 <= stop1
+  end
+
+  def get_pairs_containing(input) do
+    input
+    |> String.split("\n", trim: true)
+    |> Enum.filter(&contains?/1)
+    |> length
+  end
+
+  def get_pairs_overlapping(input) do
+    input
+    |> String.split("\n", trim: true)
+    |> Enum.filter(&overlaps?/1)
+    |> length
   end
 end
 
 {:ok, input} = File.read("inputs/advent4input.txt")
-AdventFour.get_containing_pairs(input)
+result1 = AdventFour.get_pairs_containing(input)
+IO.puts("total containing: #{result1}")
+result2 = AdventFour.get_pairs_overlapping(input)
+IO.puts("total containing: #{result2}")
