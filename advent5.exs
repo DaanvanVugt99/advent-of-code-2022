@@ -44,29 +44,51 @@ defmodule AdventFive do
 
     moves
     |> String.split("\n", trim: true)
-    |> Enum.reduce(stacks, &parse_move/2)
+    |> Enum.reduce(stacks, &parse_move_9001/2)
     |> Enum.map(&hd/1)
     |> Enum.join("")
   end
 
-  def parse_move(move, stacks) do
+  # Part 1
+
+  def parse_move_9000(move, stacks) do
     [n, origin, destination] =
       move
       |> String.split(~r/\s+/)
       |> Enum.reject(fn x -> Enum.member?(["move", "from", "to"], x) end)
       |> Enum.map(&String.to_integer/1)
 
-    Enum.reduce(1..n, stacks, fn _, stacks -> move(stacks, origin - 1, destination - 1) end)
+    Enum.reduce(1..n, stacks, fn _, stacks -> move_9000(stacks, origin, destination) end)
   end
 
-  def move(stacks, origin, destination) do
-    origin_stack = stacks |> Enum.fetch!(origin)
-    destination_stack = stacks |> Enum.fetch!(destination)
+  def move_9000(stacks, origin, destination) do
+    origin_stack = stacks |> Enum.fetch!(origin - 1)
+    destination_stack = stacks |> Enum.fetch!(destination - 1)
     crate = hd(origin_stack)
 
     stacks
-    |> List.replace_at(origin, Enum.drop(origin_stack, 1))
-    |> List.replace_at(destination, [crate | destination_stack])
+    |> List.replace_at(origin - 1, Enum.drop(origin_stack, 1))
+    |> List.replace_at(destination - 1, [crate | destination_stack])
+  end
+
+  # Part 2
+
+  def parse_move_9001(move, stacks) do
+    [n, origin, destination] =
+      move
+      |> String.split(~r/\s+/)
+      |> Enum.reject(fn x -> Enum.member?(["move", "from", "to"], x) end)
+      |> Enum.map(&String.to_integer/1)
+
+    origin_stack = stacks |> Enum.fetch!(origin - 1)
+    replace_origin_stack = origin_stack |> Enum.slice(n, length(origin_stack) - n)
+    destination_stack = stacks |> Enum.fetch!(destination - 1)
+
+    crates = origin_stack |> Enum.slice(0..(n - 1))
+
+    stacks
+    |> List.replace_at(origin - 1, replace_origin_stack)
+    |> List.replace_at(destination - 1, crates ++ destination_stack)
   end
 end
 
