@@ -1,4 +1,15 @@
 defmodule AdventFive do
+  def operate_crane(input) do
+    stacks = parse_stacks(get_stacks(input))
+    moves = get_moves(input)
+
+    moves
+    |> String.split("\n", trim: true)
+    |> Enum.reduce(stacks, &parse_move_9001/2)
+    |> Enum.map(&hd/1)
+    |> Enum.join("")
+  end
+
   def get_stacks(input) do
     input
     |> String.split("\n", trim: true)
@@ -36,17 +47,6 @@ defmodule AdventFive do
         |> length()) + 9
     )
     |> Enum.join("\n")
-  end
-
-  def operate_crane(input) do
-    stacks = parse_stacks(get_stacks(input))
-    moves = get_moves(input)
-
-    moves
-    |> String.split("\n", trim: true)
-    |> Enum.reduce(stacks, &parse_move_9001/2)
-    |> Enum.map(&hd/1)
-    |> Enum.join("")
   end
 
   # Part 1
